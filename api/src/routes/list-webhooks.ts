@@ -27,7 +27,7 @@ export const listWebhooks: FastifyPluginAsyncZod = async (app) => {
 							}),
 						),
 						nextCursor: z.string().nullable(),
-					})
+					}),
 				},
 			},
 		},

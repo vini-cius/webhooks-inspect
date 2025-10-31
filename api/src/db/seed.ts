@@ -102,7 +102,9 @@ const EVENT_TYPE_TO_OBJECT: Record<StripeEventType, EventObjectKey> = {
 const CURRENCIES = ['usd', 'eur', 'gbp', 'cad', 'aud', 'brl'] as const
 
 function generateIpAddress() {
-	return Array.from({ length: 4 }, () => faker.number.int({ min: 1, max: 254 })).join('.')
+	return Array.from({ length: 4 }, () =>
+		faker.number.int({ min: 1, max: 254 }),
+	).join('.')
 }
 
 const EVENT_OBJECT_BUILDERS: Record<
@@ -158,9 +160,13 @@ const EVENT_OBJECT_BUILDERS: Record<
 			},
 			payment_method: `pm_${faker.string.alphanumeric({ length: 24, casing: 'lower' })}`,
 			receipt_email: faker.internet.email(),
-			setup_future_usage: faker.helpers.arrayElement([null, 'on_session', 'off_session']),
+			setup_future_usage: faker.helpers.arrayElement([
+				null,
+				'on_session',
+				'off_session',
+			]),
 			status,
-			last_payment_error:	lastPaymentError,
+			last_payment_error: lastPaymentError,
 		}
 	},
 	charge: (eventType, occurredAt) => {
@@ -197,9 +203,11 @@ const EVENT_OBJECT_BUILDERS: Record<
 			failure_message:
 				status === 'failed' ? faker.finance.transactionDescription() : null,
 			outcome: {
-				network_status: status === 'failed' ? 'declined_by_network' : 'approved_by_network',
+				network_status:
+					status === 'failed' ? 'declined_by_network' : 'approved_by_network',
 				risk_level: faker.helpers.arrayElement(['low', 'normal', 'elevated']),
-				seller_message: status === 'failed' ? 'Payment declined' : 'Payment complete.',
+				seller_message:
+					status === 'failed' ? 'Payment declined' : 'Payment complete.',
 				type: status === 'failed' ? 'issuer_declined' : 'authorized',
 			},
 			paid: status !== 'failed',
@@ -229,7 +237,14 @@ const EVENT_OBJECT_BUILDERS: Record<
 		return {
 			id,
 			object: 'invoice',
-			account_country: faker.helpers.arrayElement(['US', 'GB', 'BR', 'CA', 'AU', 'DE']),
+			account_country: faker.helpers.arrayElement([
+				'US',
+				'GB',
+				'BR',
+				'CA',
+				'AU',
+				'DE',
+			]),
 			account_name: faker.company.name(),
 			amount_due: amountDue,
 			amount_paid: ['paid'].includes(status) ? amountDue : 0,
@@ -238,7 +253,10 @@ const EVENT_OBJECT_BUILDERS: Record<
 			customer: customerId,
 			customer_email: faker.internet.email(),
 			hosted_invoice_url: faker.internet.url(),
-			collection_method: faker.helpers.arrayElement(['charge_automatically', 'send_invoice']),
+			collection_method: faker.helpers.arrayElement([
+				'charge_automatically',
+				'send_invoice',
+			]),
 			number: `INV-${faker.number.int({ min: 1000, max: 999999 })}`,
 			status,
 			subscription: `sub_${faker.string.alphanumeric({ length: 14, casing: 'lower' })}`,
@@ -260,9 +278,19 @@ const EVENT_OBJECT_BUILDERS: Record<
 			object: 'customer',
 			address: {
 				city: faker.location.city(),
-				country: faker.helpers.arrayElement(['US', 'GB', 'BR', 'CA', 'AU', 'DE']),
+				country: faker.helpers.arrayElement([
+					'US',
+					'GB',
+					'BR',
+					'CA',
+					'AU',
+					'DE',
+				]),
 				line1: faker.location.streetAddress(),
-				line2: faker.helpers.arrayElement([null, faker.location.secondaryAddress()]),
+				line2: faker.helpers.arrayElement([
+					null,
+					faker.location.secondaryAddress(),
+				]),
 				postal_code: faker.location.zipCode(),
 				state: faker.location.state(),
 			},
@@ -288,14 +316,19 @@ const EVENT_OBJECT_BUILDERS: Record<
 		}
 		const status = statusMap[eventType] ?? 'active'
 		const start = Math.floor(occurredAt.getTime() / 1000)
-		const periodDuration = faker.helpers.arrayElement([2592000, 7776000, 31536000])
+		const periodDuration = faker.helpers.arrayElement([
+			2592000, 7776000, 31536000,
+		])
 
 		return {
 			id,
 			object: 'subscription',
 			application_fee_percent: null,
 			cancel_at: status === 'canceled' ? start + periodDuration : null,
-			cancel_at_period_end: status === 'canceled' ? faker.helpers.arrayElement([true, false]) : false,
+			cancel_at_period_end:
+				status === 'canceled'
+					? faker.helpers.arrayElement([true, false])
+					: false,
 			canceled_at: status === 'canceled' ? start : null,
 			created: start,
 			current_period_end: start + periodDuration,
@@ -363,7 +396,14 @@ const EVENT_OBJECT_BUILDERS: Record<
 	payment_method: (eventType, occurredAt) => {
 		const id = `pm_${faker.string.alphanumeric({ length: 24, casing: 'lower' })}`
 		const isAttached = eventType === 'payment_method.attached'
-		const brand = faker.helpers.arrayElement(['visa', 'mastercard', 'amex', 'discover', 'diners', 'jcb'])
+		const brand = faker.helpers.arrayElement([
+			'visa',
+			'mastercard',
+			'amex',
+			'discover',
+			'diners',
+			'jcb',
+		])
 		const last4 = faker.string.numeric({ length: 4 })
 
 		return {
@@ -374,7 +414,14 @@ const EVENT_OBJECT_BUILDERS: Record<
 				name: faker.person.fullName(),
 				address: {
 					city: faker.location.city(),
-					country: faker.helpers.arrayElement(['US', 'GB', 'BR', 'CA', 'AU', 'DE']),
+					country: faker.helpers.arrayElement([
+						'US',
+						'GB',
+						'BR',
+						'CA',
+						'AU',
+						'DE',
+					]),
 					line1: faker.location.streetAddress(),
 					postal_code: faker.location.zipCode(),
 				},
@@ -383,11 +430,16 @@ const EVENT_OBJECT_BUILDERS: Record<
 				brand,
 				last4,
 				exp_month: faker.number.int({ min: 1, max: 12 }),
-				exp_year: faker.number.int({ min: new Date().getFullYear(), max: new Date().getFullYear() + 6 }),
+				exp_year: faker.number.int({
+					min: new Date().getFullYear(),
+					max: new Date().getFullYear() + 6,
+				}),
 				funding: faker.helpers.arrayElement(['credit', 'debit']),
 			},
 			created: Math.floor(occurredAt.getTime() / 1000),
-			customer: isAttached ? `cus_${faker.string.alphanumeric({ length: 14, casing: 'lower' })}` : null,
+			customer: isAttached
+				? `cus_${faker.string.alphanumeric({ length: 14, casing: 'lower' })}`
+				: null,
 			livemode: faker.helpers.arrayElement([true, false]),
 			type: 'card',
 		}
@@ -433,9 +485,15 @@ const EVENT_OBJECT_BUILDERS: Record<
 			currency: faker.helpers.arrayElement(CURRENCIES),
 			description: faker.commerce.productDescription(),
 			destination: `ba_${faker.string.alphanumeric({ length: 24, casing: 'lower' })}`,
-			failure_balance_transaction: status === 'failed' ? `txn_${faker.string.alphanumeric({ length: 24, casing: 'lower' })}` : null,
+			failure_balance_transaction:
+				status === 'failed'
+					? `txn_${faker.string.alphanumeric({ length: 24, casing: 'lower' })}`
+					: null,
 			failure_code: status === 'failed' ? 'account_closed' : null,
-			failure_message: status === 'failed' ? 'Bank rejected the payout destination account.' : null,
+			failure_message:
+				status === 'failed'
+					? 'Bank rejected the payout destination account.'
+					: null,
 			method: faker.helpers.arrayElement(['standard', 'instant']),
 			source_type: faker.helpers.arrayElement(['card', 'bank_account', 'fpx']),
 			status,
@@ -461,8 +519,15 @@ const EVENT_OBJECT_BUILDERS: Record<
 			currency: faker.helpers.arrayElement(CURRENCIES),
 			description: faker.commerce.productDescription(),
 			payment_intent: `pi_${faker.string.alphanumeric({ length: 24, casing: 'lower' })}`,
-			reason: faker.helpers.arrayElement(['requested_by_customer', 'duplicate', 'fraudulent']),
-			receipt_number: faker.string.alphanumeric({ length: 12, casing: 'upper' }),
+			reason: faker.helpers.arrayElement([
+				'requested_by_customer',
+				'duplicate',
+				'fraudulent',
+			]),
+			receipt_number: faker.string.alphanumeric({
+				length: 12,
+				casing: 'upper',
+			}),
 			status,
 		}
 	},
@@ -489,7 +554,12 @@ const EVENT_OBJECT_BUILDERS: Record<
 				customer_email: faker.internet.email(),
 			},
 			is_charge_refundable: faker.helpers.arrayElement([true, false]),
-			reason: faker.helpers.arrayElement(['fraudulent', 'product_not_received', 'duplicate', 'subscription_canceled']),
+			reason: faker.helpers.arrayElement([
+				'fraudulent',
+				'product_not_received',
+				'duplicate',
+				'subscription_canceled',
+			]),
 			status,
 		}
 	},
@@ -538,7 +608,10 @@ const EVENT_OBJECT_BUILDERS: Record<
 
 function generateStripeEvent(eventType: StripeEventType, occurredAt: Date) {
 	const account = `acct_${faker.string.alphanumeric({ length: 16, casing: 'lower' })}`
-	const dataObject = EVENT_OBJECT_BUILDERS[EVENT_TYPE_TO_OBJECT[eventType]](eventType, occurredAt)
+	const dataObject = EVENT_OBJECT_BUILDERS[EVENT_TYPE_TO_OBJECT[eventType]](
+		eventType,
+		occurredAt,
+	)
 
 	return {
 		id: `evt_${faker.string.alphanumeric({ length: 24, casing: 'lower' })}`,
@@ -564,9 +637,11 @@ function buildWebhookRecords(count: number): NewWebhook[] {
 		const eventType = faker.helpers.arrayElement(STRIPE_EVENT_TYPES)
 		const createdAt = faker.date.recent({ days: 45 })
 		const eventPayload = generateStripeEvent(eventType, createdAt)
-		const body = JSON.stringify(eventPayload)
+		const body = JSON.stringify(eventPayload, null, 2)
 		const signature = `t=${eventPayload.created},v1=${faker.string.hexadecimal({ length: 64, casing: 'lower', prefix: '' })}`
-		const statusCode = faker.helpers.arrayElement([200, 200, 200, 200, 200, 202, 400, 500])
+		const statusCode = faker.helpers.arrayElement([
+			200, 200, 200, 200, 200, 202, 400, 500,
+		])
 
 		return {
 			method: 'POST',
