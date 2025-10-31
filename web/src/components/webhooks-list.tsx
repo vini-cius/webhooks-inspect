@@ -12,7 +12,7 @@ export function WebhooksList() {
 		useSuspenseInfiniteQuery({
 			queryKey: ['webhooks'],
 			queryFn: async ({ pageParam }) => {
-				const url = new URL('http://localhost:3333/api/webhooks')
+				const url = new URL(`${import.meta.env.VITE_API_URL}/webhooks`)
 
 				if (pageParam) url.searchParams.set('cursor', pageParam)
 

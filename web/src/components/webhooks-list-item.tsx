@@ -19,7 +19,7 @@ export function WebhooksListItem({ webhook }: WebhooksListItemProps) {
 
 	const { mutate: deleteWebhook } = useMutation({
 		mutationFn: async (id: string) => {
-			await fetch(`http://localhost:3333/api/webhooks/${id}`, {
+			await fetch(`${import.meta.env.VITE_API_URL}/webhooks/${id}`, {
 				method: 'DELETE',
 			})
 		},
